@@ -1,6 +1,8 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+#include <iostream>
 
 // Variable that stores terminal attributes
 struct termios orig_termios;
@@ -40,6 +42,13 @@ int main(int argc, char** argv)
     enable_raw_mode();
     
     char c;
-    while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q');
+    while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q')
+    {
+        // If c is a control character(nonprintable characters)
+        if(iscntrl(c))
+            std::cout << (int)c << "\n";
+        else
+            std::cout << (int)c << " ('" << c << "')\n";
+    }
     return 0;
 }

@@ -3,19 +3,29 @@
 #include <termios.h>
 #include <unistd.h>
 #include <iostream>
+#include <cstdio>
+#include <cerrno>
 
 // Variable that stores terminal attributes
 struct termios orig_termios;
 
+void die(const char* s)
+{
+    std::perror(s);
+    exit(1);
+}
+
 void disable_raw_mode()
 {
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+        die("tcsetattr");
 }
 
 void enable_raw_mode()
 {
     // Read terminal attributes and put in orig_termios
-    tcgetattr(STDIN_FILENO, &orig_termios);
+    if(tcgetattr(STDIN_FILENO, &orig_termios) == -1)
+        die("tcgetattr");
 
     /* Register disable_raw_mode function to be automatically executed when 
        program exits */
@@ -61,7 +71,8 @@ void enable_raw_mode()
     /* Set terminal attributes
     TCSAFLUSH waits for all pending output to be written to the terminal
      and discards input that wasn't read */
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+        die("tcsetattr");
 }
 
 
@@ -72,7 +83,8 @@ int main(int argc, char** argv)
     while(true)
     {
         char c = '\0';
-        read(STDIN_FILENO, &c, 1);
+        if(read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN)
+            die("read");
         
         // If c is a control character(nonprintable characters)
         if(iscntrl(c))

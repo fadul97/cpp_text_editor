@@ -22,8 +22,11 @@ void enable_raw_mode()
     // Copy struct before making changes
     struct termios raw = orig_termios;
 
-    // Local flags: 
-    raw.c_lflag &= ~(ECHO);
+    /* Local flags: 
+     * ECHO: turn off key printing when typed
+     * ICANON: turn off canonical mode
+    */
+    raw.c_lflag &= ~(ECHO | ICANON);
 
     /* Set terminal attributes
     TCSAFLUSH waits for all pending output to be written to the terminal

@@ -27,9 +27,17 @@ void enable_raw_mode()
     /* Local flags: 
      * ECHO: turn off key printing when typed
      * ICANON: turn off canonical mode
-    */
-    raw.c_lflag &= ~(ECHO | ICANON);
+     * ISIG: turn off transmission from Ctrl-C and Ctrl-Z
+     * IEXTEN: turn off transmission from Ctrl-V
+     */
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
 
+    /* Input flags
+     * IXON: turn off software flow control(Ctrl-S and Ctrl-Q transmission)
+     * ICRNL: turn off carriage returns
+     */
+    raw.c_iflag &= ~(IXON | ICRNL);
+    
     /* Set terminal attributes
     TCSAFLUSH waits for all pending output to be written to the terminal
      and discards input that wasn't read */

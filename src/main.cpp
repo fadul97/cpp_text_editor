@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cerrno>
-
+//
 // Variable that stores terminal attributes
 struct termios orig_termios;
 
